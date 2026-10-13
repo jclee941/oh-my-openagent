@@ -1,3 +1,9 @@
+## 2026-10-14 - Doctor names leftover app-server daemons; review follow-ups to the retirement (#10033)
+
+An app-server daemon started by an older version keeps running after an upgrade. It has no `--mode` and is reparented to init, so `omo doctor` reported it as a session orphaned by a signaled launcher. Doctor now recognizes the `app-server` subcommand right after the engine entry (npm `senpi/dist[/bundle]/cli.js` or the binary runtime) and says the command was removed and the daemon should be stopped; it is still listed in the explicit `omo doctor --reap <pid>` line. A prompt that merely mentions app-server keeps the orphaned-session line.
+
+`bin/lib/launcher.js` calls `refuseRetiredCommand` once instead of checking the command name first, and the compile-entry test title now says the refusal happens before the engine is imported rather than before any import, since legacy state migration may run first.
+
 ## 2026-10-12 - OmO Native retires the Codex-compatible app-server command (#10033)
 
 `omo app-server` is no longer a launch path. The npm launcher and the compiled entry answer the retired command with a diagnostic and exit 2 instead of forwarding it to the engine with the OmO extension appended, so the old invocation cannot become a prompt. OmO Native keeps its RPC host, daemon, thread, doctor and every one-shot engine command dispatch unchanged (#9572/#9573 remain the dispatch contract).
